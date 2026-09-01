@@ -79,4 +79,42 @@ btn_save = tk.Button(root, text="Save Action to SQL", bg="gray20", fg="white", c
 # place it on the screen
 # размещаем на экране 
 btn_save.pack(pady=20)
+# multi-line field for displaying logs
+# многострочное поле для вывода логов
+txt_output = tk.Text(root, width=45, height=8, bg="gray20", fg="lightgreen")
+# place it on the screen
+# размещаем на экране
+txt_output.pack(pady=10)
+def show_history():
+    # clearing a text field from old entries (1.0 - clearing from the very first line)
+    # очистка текстового поля от старых записей (1.0 - очистка с самой первой строки)
+    txt_output.delete("1.0", tk.END)
+    # connect to the database and create a cursor
+    # подключаемся к базе и создаем курсор
+    db_conn = sqlite3.connect("actions.db")
+    db_cursor = db_conn.cursor()
+    # execute an SQL-query to read all logs
+    # выполняем SQL-запрос для чтения всех логов
+    db_cursor.execute("SELECT * FROM logs")
+    # download all lines into a variable
+    # скачать все строки в переменную
+    rows = db_cursor.fetchall()
+    # run a for loop to iterate through all the received lines
+    # запускаем цикл for для перебора всех полученных строк 
+    for row in rows:
+        # create a log line
+        # формируем строку лога 
+        log_line = f"[{row[1]}] {row[2]}: {row[3]}\n"
+        # insert a line into the widget
+        # вставляем строку в виджет 
+        txt_output.insert(tk.END, log_line)
+        # close the database after executing the loop
+        # закрываем базу после выполнения цикла
+    db_conn.close()
+# "show history" button
+# кнопка "показать историю"
+btn_history = tk.Button(root, text="Show History", bg="gray20", fg="white", command=show_history)
+# place it on the screen
+# размещаем на экране
+btn_history.pack(pady=10)
 root.mainloop()
